@@ -39,6 +39,8 @@ using SymEngine::csc;
 using SymEngine::Csc;
 using SymEngine::sec;
 using SymEngine::Sec;
+using SymEngine::heaviside;
+using SymEngine::Heaviside;
 using SymEngine::ASin;
 using SymEngine::ACos;
 using SymEngine::ASec;
@@ -4044,6 +4046,9 @@ TEST_CASE("max: functions", "[functions]")
     REQUIRE(eq(
         *res, *max({x, i2, y}))); // max(max(2, x), max(2/5, y)) == max(x, 2, y)
 
+    res = max({x, y})->diff(x);
+    REQUIRE(is_a<Heaviside>(*res));
+
     CHECK_THROWS_AS(min({}), SymEngineException);
 
     CHECK_THROWS_AS(min({c}), SymEngineException);
@@ -4094,9 +4099,32 @@ TEST_CASE("min: functions", "[functions]")
         *res,
         *min({x, r2_5, y}))); // min(min(2, x), min(2/5, y)) == min(x, 2/5, y)
 
+    res = min({x, y})->diff(x);
+    REQUIRE(is_a<Heaviside>(*res));
+
     CHECK_THROWS_AS(min({}), SymEngineException);
 
     CHECK_THROWS_AS(min({c}), SymEngineException);
+}
+
+TEST_CASE("heaviside: functions", "[functions]")
+{
+    RCP<const Symbol> x = symbol("x");
+
+    RCP<const Basic> res;
+
+    res = heaviside({x});
+    REQUIRE(eq(*res, *heaviside({x}))); // min(x, y) == min(y, x)
+    REQUIRE(is_a<Heaviside>(*res));        // min(x, y) is a min
+
+    res = heaviside({one});
+    REQUIRE(eq(*res, *one)); // heaviside(1) == 1
+
+    res = heaviside({zero});
+    REQUIRE(eq(*res, *one)); // heaviside(0) == 1
+
+    res = heaviside({minus_one});
+    REQUIRE(eq(*res, *zero)); // heaviside(-1) == 0
 }
 
 TEST_CASE("test_dummy", "[Dummy]")

@@ -256,6 +256,9 @@ CWRAPPER_OUTPUT_TYPE basic_expand(basic s, const basic a);
 //! Assigns s = -a.
 CWRAPPER_OUTPUT_TYPE basic_neg(basic s, const basic a);
 
+//! Assigns s = heaviside(a)
+CWRAPPER_OUTPUT_TYPE basic_heaviside(basic s, const basic a);
+
 //! Assigns s = abs(a).
 CWRAPPER_OUTPUT_TYPE basic_abs(basic s, const basic a);
 

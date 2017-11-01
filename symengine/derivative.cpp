@@ -33,8 +33,7 @@ public:
     }
 
     DIFF0(UnivariateSeries)
-    DIFF0(Max)
-    DIFF0(Min)
+    //DIFF0(Heaviside)
 #endif
 
     static RCP<const Basic> diff(const Number &self, const RCP<const Symbol> &x)
@@ -414,6 +413,48 @@ public:
         else
             return mul(pow(self.get_base(), self.get_exp()),
                        mul(self.get_exp(), log(self.get_base()))->diff(x));
+    }
+
+    static RCP<const Basic> diff(const Min &self, const RCP<const Symbol> &x)
+    {
+        vec_basic v = self.get_args();
+        vec_basic diffs;
+        for (size_t i = 0; i < v.size(); i++) {
+            RCP<const Basic> diff = v[i]->diff(x);
+            if (v.size() == 2) {
+                diffs.push_back(mul(diff , heaviside(sub(v[1 - i], v[i]))));
+            } else {
+                vec_basic new_mins;
+                for (size_t n = 0; n < v.size(); n++) {
+                    if (n != i)
+                        new_mins.push_back(v[n]);
+                }
+                diffs.push_back(mul(diff, heaviside(sub(min(new_mins), v[i]))));
+            }
+        }
+
+        return add(diffs);
+    }
+
+    static RCP<const Basic> diff(const Max &self, const RCP<const Symbol> &x)
+    {
+        vec_basic v = self.get_args();
+        vec_basic diffs;
+        for (size_t i = 0; i < v.size(); i++) {
+            RCP<const Basic> diff = v[i]->diff(x);
+            if (v.size() == 2) {
+                diffs.push_back(mul(diff , heaviside(sub(v[i], v[1 - i]))));
+            } else {
+                vec_basic new_max;
+                for (size_t n = 0; n < v.size(); n++) {
+                    if (n != i)
+                        new_max.push_back(v[n]);
+                }
+                diffs.push_back(mul(diff, heaviside(sub(v[i], max(new_max)))));
+            }
+        }
+
+        return add(diffs);
     }
 
     static RCP<const Basic> diff(const Sin &self, const RCP<const Symbol> &x)

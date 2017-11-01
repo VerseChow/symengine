@@ -285,6 +285,12 @@ public:
     using EvalDoubleVisitor<double, C>::apply;
     using EvalDoubleVisitor<double, C>::result_;
 
+    void bvisit(const Heaviside &x)
+    {
+        double tmp = apply(*(x.get_arg()));
+        result_ = tmp < 0? 0 : 1;
+    }
+
     void bvisit(const ATan2 &x)
     {
         double num = apply(*(x.get_num()));

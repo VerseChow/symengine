@@ -185,6 +185,21 @@ public:
     }
 };
 
+class Heaviside : public OneArgFunction
+{
+public:
+    IMPLEMENT_TYPEID(HEAVISIDE);
+    //! Sign constructor
+    Heaviside(const RCP<const Basic> &arg);
+    //! \return `true` if canonical
+    bool is_canonical(const RCP<const Basic> &arg) const;
+    //! \return Canonicalized sign
+    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+};
+
+//! Canonicalize Sign
+RCP<const Basic> heaviside(const RCP<const Basic> &arg);
+
 class Sign : public OneArgFunction
 {
 public:

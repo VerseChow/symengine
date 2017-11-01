@@ -440,6 +440,53 @@ bool inverse_lookup(umap_basic_basic &d, const RCP<const Basic> &t,
     }
 }
 
+Heaviside::Heaviside(const RCP<const Basic> &arg) : OneArgFunction(arg)
+{
+    SYMENGINE_ASSIGN_TYPEID()
+    SYMENGINE_ASSERT(is_canonical(arg))
+}
+
+bool Heaviside::is_canonical(const RCP<const Basic> &arg) const
+{
+    if (is_a_Number(*arg)) {
+        return false;
+    }
+    if (is_a<Constant>(*arg)) {
+        return false;
+    }
+    if (is_a<Heaviside>(*arg)) {
+        return false;
+    }
+    return true;
+}
+
+RCP<const Basic> Heaviside::create(const RCP<const Basic> &arg) const
+{
+    return heaviside(arg);
+}
+
+RCP<const Basic> heaviside(const RCP<const Basic> &arg)
+{
+    if (is_a_Number(*arg)) {
+        if (is_a<NaN>(*arg)) {
+            return Nan;
+        }
+        if (down_cast<const Number &>(*arg).is_zero()) {
+            return one;
+        }
+        if (down_cast<const Number &>(*arg).is_positive()) {
+            return one;
+        }
+        if (down_cast<const Number &>(*arg).is_negative()) {
+            return zero;
+        }
+    }
+    if (is_a<Heaviside>(*arg)) {
+        return one;
+    }
+    return make_rcp<const Heaviside>(arg);
+}
+
 Sign::Sign(const RCP<const Basic> &arg) : OneArgFunction(arg)
 {
     SYMENGINE_ASSIGN_TYPEID()
