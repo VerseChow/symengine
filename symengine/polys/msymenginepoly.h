@@ -466,6 +466,7 @@ public:
     }
 
     IMPLEMENT_TYPEID(MINTPOLY)
+
     hash_t __hash__() const;
     RCP<const Basic> as_symbolic() const;
 
@@ -483,6 +484,7 @@ public:
     }
 
     IMPLEMENT_TYPEID(MEXPRPOLY)
+
     hash_t __hash__() const;
     RCP<const Basic> as_symbolic() const;
     Expression

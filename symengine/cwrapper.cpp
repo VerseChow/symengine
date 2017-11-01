@@ -188,11 +188,7 @@ TypeID basic_get_class_id(const char *c)
 {
     static std::map<std::string, TypeID> names = {
 #define SYMENGINE_INCLUDE_ALL
-#define SYMENGINE_ENUM(type, Class)                                            \
-    {                                                                          \
-        xstr(Class), SYMENGINE_##type                                          \
-    }                                                                          \
-    ,
+#define SYMENGINE_ENUM(type, Class) {xstr(Class), SYMENGINE_##type},
 #include "symengine/type_codes.inc"
 #undef SYMENGINE_ENUM
 #undef SYMENGINE_INCLUDE_ALL
@@ -205,11 +201,7 @@ char *basic_get_class_from_id(TypeID id)
 {
     static std::map<TypeID, std::string> names = {
 #define SYMENGINE_INCLUDE_ALL
-#define SYMENGINE_ENUM(type, Class)                                            \
-    {                                                                          \
-        SYMENGINE_##type, xstr(Class)                                          \
-    }                                                                          \
-    ,
+#define SYMENGINE_ENUM(type, Class) {SYMENGINE_##type, xstr(Class)},
 #include "symengine/type_codes.inc"
 #undef SYMENGINE_ENUM
 #undef SYMENGINE_INCLUDE_ALL
@@ -489,6 +481,17 @@ CWRAPPER_OUTPUT_TYPE basic_parse(basic b, const char *str)
 {
     CWRAPPER_BEGIN
     b->m = SymEngine::parse(str);
+    CWRAPPER_END
+}
+
+CWRAPPER_OUTPUT_TYPE basic_parse2(basic b, const char *str, int convert_xor)
+{
+    CWRAPPER_BEGIN
+    if (convert_xor > 0) {
+        b->m = SymEngine::parse(str);
+    } else {
+        b->m = SymEngine::parse(str, false);
+    }
     CWRAPPER_END
 }
 
